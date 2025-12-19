@@ -8,17 +8,16 @@ from matplotlib.path import Path
 import pygame.gfxdraw
 import sys
 import os
-
-cpath = os.path.dirname(os.path.abspath(__file__))
+cpath = os.path.dirname(os.path.abspath(__file__))   # Only really here for IMAGE_PATH, if your image is in the same directory as the script
 
 # VARIABLES  (Adjust for each image, just mess with the values until it looks correct)
 IMAGE_PATH = r"C:\Windows\System32\@WLOGO_96x96.png" # Image path obviously, Default is just a random image in system32
 SCREEN_SIZE = 800                                    # Pygame window size
-COLOR_BUCKET = 10                                    # Quantization bucket size (Lower colors)
+COLOR_BUCKET = 5                                     # Quantization bucket size (Lower colors)
 ZOOM_STEP = 1.2                                      # Zoom factor per key press
-MIN_REGION_PIXELS = 5.0                              # Reduce "noise" by ignoring small regions
-CONTOUR_TOLERANCE = 5.0                              # Distance to round to when simplifying polygons
-IMAGE_SHAPE_FILL = (5, 5)                            # Structure for binary closing (to close small gaps in shapes)
+MIN_REGION_PIXELS = 0.0                              # Reduce "noise" by ignoring small regions
+CONTOUR_TOLERANCE = 0.0                              # Distance to round to when simplifying polygons
+IMAGE_SHAPE_FILL = (1, 1)                            # Structure for binary closing (to close small gaps in shapes)
 
 # CHECK ARGV FOR IMAGE
 try:                                # If something fails, it just skips
@@ -32,7 +31,7 @@ try:                                # If something fails, it just skips
 except:
     pass
 
-# STEP 1: load image
+# STEP 1: Load image, and get data (including colors)
 image = Image.open(IMAGE_PATH).convert("RGB")   # Use PIL to open image, and force into RGB
 data = numpy.array(image)                       # Convert image to numpy array (width, height, 3) (3 because R, G, B)
 height, width, color_channels = data.shape      # (data.shape is the dimensions and number of color channels)
@@ -43,11 +42,11 @@ def round_color(color, bucket=COLOR_BUCKET):
     return tuple((numpy.array(color) // bucket) * bucket)
 rounded_data = numpy.apply_along_axis(round_color, 2, data)   # Run function on image data with section 2 (which is color_channels)
 
-# STEP 3: Find all unique colors in the image
+# STEP 3: Find all unique colors in the image (or just find all the colors)
 unique_colors = numpy.unique(rounded_data.reshape(-1, 3), axis=0)   # What colors are left in the image after rounding?
 print("Found", len(unique_colors), "unique colors after rounding:\n", str(unique_colors))
 
-# STEP 4: Go through each color and find shapes
+# STEP 4 TO 7: Process color, remove overlaps, fill gaps, refine closed spaces
 vector_data = []
 
 for i, color in enumerate(unique_colors):
@@ -141,3 +140,4 @@ while running:
     clock.tick(60)
 
 pygame.quit()
+
