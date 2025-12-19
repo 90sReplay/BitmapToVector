@@ -130,7 +130,7 @@ while running:
     # Clear screen
     screen.fill((255, 255, 255))
 
-    # Draw all vector shapes
+    # STEP 10: Draw all vector shapes
     for color, polygon in vector_data:
         poly_points = [(int(x*scale + offset_x), int(y*scale + offset_y)) for x, y in polygon]
         if len(poly_points) >= 3:
@@ -141,5 +141,6 @@ while running:
     clock.tick(60)
 
 pygame.quit()
+
 
 
