@@ -47,6 +47,7 @@ unique_colors = numpy.unique(rounded_data.reshape(-1, 3), axis=0)   # What color
 print("Found", len(unique_colors), "unique colors after rounding:\n", str(unique_colors))
 
 # STEP 4 TO 7: Process color, remove overlaps, fill gaps, refine closed spaces
+# Another note, steps 8 and 9 are switched to masks instead, to be displayed on the pygame screen
 vector_data = []
 
 for i, color in enumerate(unique_colors):
@@ -140,4 +141,5 @@ while running:
     clock.tick(60)
 
 pygame.quit()
+
 
